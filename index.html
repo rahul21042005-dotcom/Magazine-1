@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Two Hearts, One Beautiful Story — 3D Flipbook</title>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#eadbd5;font-family:system-ui,-apple-system,Segoe UI,sans-serif}
+#app{width:100%;height:100%;display:flex;align-items:center;justify-content:center}
+#book{width:min(92vw,900px);height:min(92vh,1200px);}
+.controls{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);display:flex;gap:8px;align-items:center;padding:8px 12px;border-radius:24px;background:rgba(255,255,255,.86);box-shadow:0 6px 24px rgba(0,0,0,.18);z-index:10}
+button{border:0;background:#8d2843;color:white;border-radius:18px;padding:9px 15px;font-weight:600;cursor:pointer}
+button:disabled{opacity:.45;cursor:default}
+#count{min-width:70px;text-align:center;color:#5b3340;font-size:14px}
+.hint{position:fixed;top:12px;left:50%;transform:translateX(-50%);padding:7px 12px;border-radius:18px;background:rgba(255,255,255,.78);color:#6b3c4a;font-size:12px;z-index:10}
+@media(max-width:600px){#book{width:94vw;height:84vh} .controls{bottom:10px}}
+</style>
+</head>
+<body>
+<div class="hint">Drag a page corner or swipe to turn pages</div>
+<div id="app"><div id="book"></div></div>
+<div class="controls">
+  <button id="prev">‹</button>
+  <div id="count">1 / 8</div>
+  <button id="next">›</button>
+  <button id="fs">⛶</button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.js"></script>
+<script>
+const pages = ['pages/page-1.jpg', 'pages/page-2.jpg', 'pages/page-3.jpg', 'pages/page-4.jpg', 'pages/page-5.jpg', 'pages/page-6.jpg', 'pages/page-7.jpg', 'pages/page-8.jpg'];
+const bookEl = document.getElementById('book');
+const pageFlip = new St.PageFlip(bookEl, {
+  width: 600,
+  height: 900,
+  size: 'stretch',
+  minWidth: 280,
+  maxWidth: 900,
+  minHeight: 420,
+  maxHeight: 1300,
+  maxShadowOpacity: 0.55,
+  showCover: true,
+  mobileScrollSupport: false,
+  usePortrait: true,
+  flippingTime: 850,
+  drawShadow: true
+});
+pageFlip.loadFromImages(pages);
+
+const count = document.getElementById('count');
+function update() {
+  const p = pageFlip.getCurrentPageIndex() + 1;
+  count.textContent = p + ' / ' + pages.length;
+  document.getElementById('prev').disabled = p <= 1;
+  document.getElementById('next').disabled = p >= pages.length;
+}
+pageFlip.on('flip', update);
+document.getElementById('prev').onclick = () => pageFlip.flipPrev();
+document.getElementById('next').onclick = () => pageFlip.flipNext();
+document.getElementById('fs').onclick = async () => {
+  if (!document.fullscreenElement) await document.documentElement.requestFullscreen?.();
+  else await document.exitFullscreen?.();
+};
+update();
+</script>
+</body>
+</html>
